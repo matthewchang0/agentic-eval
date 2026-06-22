@@ -1,4 +1,4 @@
-# Design Notes — `agentic_eval`
+# Design Notes for `agentic_eval`
 
 ## Database Schema
 

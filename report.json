@@ -6,7 +6,7 @@
     "well_formed_json": 1.0,
     "correct_ids": 1.0,
     "correct_order": 1.0,
-    "queried_tables": 1.0
+    "queried_tables": 1
   },
   "defect_taxonomy": {},
   "instances": [
