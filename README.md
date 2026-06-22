@@ -1,15 +1,11 @@
 # agentic_eval
 
-A mini agentic evaluation framework that demonstrates how AI labs benchmark
-tool-using agents: a sandboxed environment, an automated verifier that grades
-both outcome and process, and adversarial tests that confirm the verifier
-resists reward hacking.
+A mini agentic evaluation framework showing how AI labs benchmark tool-using agents: a sandboxed environment, an automated verifier that grades both outcome and process, and adversarial tests that confirm the verifier resists reward hacking.
 
 ## Quick start
 
 ```bash
-cd Code/agentic_eval
-pip install -r requirements.txt   # only anthropic + pytest
+pip install -r requirements.txt   # anthropic + pytest
 
 # Run 5 instances with the offline baseline agent (no API key needed)
 python -m agentic_eval.run --agent baseline --n 5
@@ -25,9 +21,7 @@ pytest
 
 The framework evaluates an agent on a **SQL data-analysis task**:
 
-> Given a SQLite database of customers, subscriptions, usage events and
-> payments, identify the **top 3 customers most at risk of churn** according
-> to an explicit formula, and submit a ranked JSON answer.
+> Given a SQLite database of customers, subscriptions, usage events, and payments, identify the **top 3 customers most at risk of churn** according to an explicit formula, and submit a ranked JSON answer.
 
 The agent interacts with the environment through five tools:
 
@@ -35,7 +29,7 @@ The agent interacts with the environment through five tools:
 |---|---|
 | `list_tables` | List all tables in the database |
 | `describe_table(name)` | Show column definitions |
-| `run_sql(query)` | Execute a SELECT query (read-only guard enforced) |
+| `run_sql(query)` | Execute a read-only SELECT query |
 | `read_file(filename)` | Read a file from the agent's sandbox |
 | `submit_answer(answer)` | Write the final answer to `answer.json` |
 
@@ -46,13 +40,11 @@ The verifier grades four criteria independently:
 | Criterion | What it checks |
 |---|---|
 | `well_formed_json` | Submission has the correct structure (3 entries, required fields) |
-| `correct_ids` | The set of submitted `customer_id`s matches ground truth |
+| `correct_ids` | Submitted `customer_id`s match ground truth |
 | `correct_order` | Ranking order is correct (highest risk first) |
 | `queried_tables` | Trace shows SQL queries on `usage_events`, `payments`, and `subscriptions` |
 
-All four must pass for `verdict.passed = True`.  Importantly, a correct
-answer submitted without running any queries **fails** the process criterion —
-guessing is not rewarded.
+All four must pass for `verdict.passed = True`. A correct answer submitted without running any queries fails the process criterion — guessing is not rewarded.
 
 ## Example output
 
@@ -112,14 +104,11 @@ Options:
   --n N                      Number of task instances (default: 5)
   --seed INT                 Starting seed (default: 0)
   --out PATH                 Report file (default: report.json)
-  --traces-dir PATH          Directory to save per-instance trace JSON files
+  --traces-dir PATH          Directory for per-instance trace JSON files
 ```
 
-## Extending the framework
+## Extending
 
-Drop a new task in by subclassing `Task`, `Environment`, and `Verifier` from
-`agentic_eval.interfaces`.  The runner, trace logger, and tool layer are
-task-agnostic.
+Subclass `Task`, `Environment`, and `Verifier` from `agentic_eval.interfaces` to add a new task. The runner, trace logger, and tool layer are task-agnostic.
 
-See `DESIGN.md` for the verifier-robustness rationale and a full description
-of the churn formula and data-generation scheme.
+See `DESIGN.md` for the verifier-robustness rationale and a full description of the churn formula and data-generation scheme.
