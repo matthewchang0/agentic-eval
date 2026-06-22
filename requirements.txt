@@ -1,0 +1,5 @@
+# Runtime
+anthropic>=0.30.0
+
+# Testing
+pytest>=8.0.0

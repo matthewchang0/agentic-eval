@@ -1,0 +1,284 @@
+{
+  "agent": "baseline",
+  "n_instances": 10,
+  "pass_rate": 1.0,
+  "per_criterion_pass_rates": {
+    "well_formed_json": 1.0,
+    "correct_ids": 1.0,
+    "correct_order": 1.0,
+    "queried_tables": 1.0
+  },
+  "defect_taxonomy": {},
+  "instances": [
+    {
+      "instance_id": "churn-seed0",
+      "passed": true,
+      "score": 1.0,
+      "criteria": [
+        {
+          "name": "well_formed_json",
+          "passed": true,
+          "detail": "Valid structure"
+        },
+        {
+          "name": "correct_ids",
+          "passed": true,
+          "detail": "expected set [17, 15, 19], got [17, 15, 19]"
+        },
+        {
+          "name": "correct_order",
+          "passed": true,
+          "detail": "expected order [17, 15, 19], got [17, 15, 19]"
+        },
+        {
+          "name": "queried_tables",
+          "passed": true,
+          "detail": "usage_events=True, payments=True, subscriptions=True"
+        }
+      ]
+    },
+    {
+      "instance_id": "churn-seed1",
+      "passed": true,
+      "score": 1.0,
+      "criteria": [
+        {
+          "name": "well_formed_json",
+          "passed": true,
+          "detail": "Valid structure"
+        },
+        {
+          "name": "correct_ids",
+          "passed": true,
+          "detail": "expected set [20, 18, 12], got [20, 18, 12]"
+        },
+        {
+          "name": "correct_order",
+          "passed": true,
+          "detail": "expected order [20, 18, 12], got [20, 18, 12]"
+        },
+        {
+          "name": "queried_tables",
+          "passed": true,
+          "detail": "usage_events=True, payments=True, subscriptions=True"
+        }
+      ]
+    },
+    {
+      "instance_id": "churn-seed2",
+      "passed": true,
+      "score": 1.0,
+      "criteria": [
+        {
+          "name": "well_formed_json",
+          "passed": true,
+          "detail": "Valid structure"
+        },
+        {
+          "name": "correct_ids",
+          "passed": true,
+          "detail": "expected set [8, 9, 18], got [8, 9, 18]"
+        },
+        {
+          "name": "correct_order",
+          "passed": true,
+          "detail": "expected order [8, 9, 18], got [8, 9, 18]"
+        },
+        {
+          "name": "queried_tables",
+          "passed": true,
+          "detail": "usage_events=True, payments=True, subscriptions=True"
+        }
+      ]
+    },
+    {
+      "instance_id": "churn-seed3",
+      "passed": true,
+      "score": 1.0,
+      "criteria": [
+        {
+          "name": "well_formed_json",
+          "passed": true,
+          "detail": "Valid structure"
+        },
+        {
+          "name": "correct_ids",
+          "passed": true,
+          "detail": "expected set [4, 9, 6], got [4, 9, 6]"
+        },
+        {
+          "name": "correct_order",
+          "passed": true,
+          "detail": "expected order [4, 9, 6], got [4, 9, 6]"
+        },
+        {
+          "name": "queried_tables",
+          "passed": true,
+          "detail": "usage_events=True, payments=True, subscriptions=True"
+        }
+      ]
+    },
+    {
+      "instance_id": "churn-seed4",
+      "passed": true,
+      "score": 1.0,
+      "criteria": [
+        {
+          "name": "well_formed_json",
+          "passed": true,
+          "detail": "Valid structure"
+        },
+        {
+          "name": "correct_ids",
+          "passed": true,
+          "detail": "expected set [11, 15, 18], got [11, 15, 18]"
+        },
+        {
+          "name": "correct_order",
+          "passed": true,
+          "detail": "expected order [11, 15, 18], got [11, 15, 18]"
+        },
+        {
+          "name": "queried_tables",
+          "passed": true,
+          "detail": "usage_events=True, payments=True, subscriptions=True"
+        }
+      ]
+    },
+    {
+      "instance_id": "churn-seed5",
+      "passed": true,
+      "score": 1.0,
+      "criteria": [
+        {
+          "name": "well_formed_json",
+          "passed": true,
+          "detail": "Valid structure"
+        },
+        {
+          "name": "correct_ids",
+          "passed": true,
+          "detail": "expected set [10, 6, 5], got [10, 6, 5]"
+        },
+        {
+          "name": "correct_order",
+          "passed": true,
+          "detail": "expected order [10, 6, 5], got [10, 6, 5]"
+        },
+        {
+          "name": "queried_tables",
+          "passed": true,
+          "detail": "usage_events=True, payments=True, subscriptions=True"
+        }
+      ]
+    },
+    {
+      "instance_id": "churn-seed6",
+      "passed": true,
+      "score": 1.0,
+      "criteria": [
+        {
+          "name": "well_formed_json",
+          "passed": true,
+          "detail": "Valid structure"
+        },
+        {
+          "name": "correct_ids",
+          "passed": true,
+          "detail": "expected set [7, 17, 13], got [7, 17, 13]"
+        },
+        {
+          "name": "correct_order",
+          "passed": true,
+          "detail": "expected order [7, 17, 13], got [7, 17, 13]"
+        },
+        {
+          "name": "queried_tables",
+          "passed": true,
+          "detail": "usage_events=True, payments=True, subscriptions=True"
+        }
+      ]
+    },
+    {
+      "instance_id": "churn-seed7",
+      "passed": true,
+      "score": 1.0,
+      "criteria": [
+        {
+          "name": "well_formed_json",
+          "passed": true,
+          "detail": "Valid structure"
+        },
+        {
+          "name": "correct_ids",
+          "passed": true,
+          "detail": "expected set [12, 16, 18], got [12, 16, 18]"
+        },
+        {
+          "name": "correct_order",
+          "passed": true,
+          "detail": "expected order [12, 16, 18], got [12, 16, 18]"
+        },
+        {
+          "name": "queried_tables",
+          "passed": true,
+          "detail": "usage_events=True, payments=True, subscriptions=True"
+        }
+      ]
+    },
+    {
+      "instance_id": "churn-seed8",
+      "passed": true,
+      "score": 1.0,
+      "criteria": [
+        {
+          "name": "well_formed_json",
+          "passed": true,
+          "detail": "Valid structure"
+        },
+        {
+          "name": "correct_ids",
+          "passed": true,
+          "detail": "expected set [17, 18, 20], got [17, 18, 20]"
+        },
+        {
+          "name": "correct_order",
+          "passed": true,
+          "detail": "expected order [17, 18, 20], got [17, 18, 20]"
+        },
+        {
+          "name": "queried_tables",
+          "passed": true,
+          "detail": "usage_events=True, payments=True, subscriptions=True"
+        }
+      ]
+    },
+    {
+      "instance_id": "churn-seed9",
+      "passed": true,
+      "score": 1.0,
+      "criteria": [
+        {
+          "name": "well_formed_json",
+          "passed": true,
+          "detail": "Valid structure"
+        },
+        {
+          "name": "correct_ids",
+          "passed": true,
+          "detail": "expected set [20, 10, 3], got [20, 10, 3]"
+        },
+        {
+          "name": "correct_order",
+          "passed": true,
+          "detail": "expected order [20, 10, 3], got [20, 10, 3]"
+        },
+        {
+          "name": "queried_tables",
+          "passed": true,
+          "detail": "usage_events=True, payments=True, subscriptions=True"
+        }
+      ]
+    }
+  ]
+}
