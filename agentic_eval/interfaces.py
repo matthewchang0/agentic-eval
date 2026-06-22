@@ -1,4 +1,8 @@
-"""Core abstractions for the agentic evaluation framework."""
+"""Core abstractions for the agentic evaluation framework.
+
+All framework participants (tasks, agents, verifiers, tools) implement one of
+these abstract base classes.
+"""
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -9,7 +13,7 @@ from typing import Any
 
 @dataclass
 class CriterionResult:
-    """Pass/fail result for a single grading criterion."""
+    """Outcome (pass/fail) for a single grading criterion."""
 
     name: str
     passed: bool
@@ -18,7 +22,7 @@ class CriterionResult:
 
 @dataclass
 class VerdictReport:
-    """Full evaluation verdict for one task instance."""
+    """Complete evaluation verdict for a single task instance."""
 
     instance_id: str
     passed: bool
@@ -28,7 +32,7 @@ class VerdictReport:
 
 @dataclass
 class TraceStep:
-    """One recorded step in an agent's execution trace."""
+    """A single recorded step in an agent's execution trace."""
 
     step: int
     kind: str  # "thought" | "tool_call" | "tool_result"
@@ -36,7 +40,7 @@ class TraceStep:
 
 
 class Tool(ABC):
-    """A callable tool exposed to the agent."""
+    """A tool that the agent can invoke."""
 
     name: str   # class-level constant, override in subclass
     schema: dict  # JSON Schema (type: object) for this tool's input arguments
@@ -46,13 +50,13 @@ class Tool(ABC):
         """
         Execute the tool inside *env*.
 
-        Must never raise — return structured error dicts instead so the agent
+        Must never raise — return a structured error dict instead so the agent
         loop can relay the error without crashing.
         """
 
 
 class Environment(ABC):
-    """Sandboxed execution context for one task instance."""
+    """Isolated execution context for one task instance."""
 
     @property
     @abstractmethod
@@ -83,7 +87,7 @@ class Task(ABC):
 
 
 class Agent(ABC):
-    """An agent that attempts to complete a task via tool calls."""
+    """Agent that attempts to complete tasks via tool calls."""
 
     @abstractmethod
     def run(
@@ -94,7 +98,7 @@ class Agent(ABC):
         max_steps: int,
     ) -> list[TraceStep]:
         """
-        Drive the agent until it submits an answer or hits *max_steps*.
+        Drive the agent until it submits an answer or reaches *max_steps*.
 
         The implementation is responsible for both directing the agent and
         executing tool calls — it must record every tool_call and tool_result
@@ -115,6 +119,6 @@ class Verifier(ABC):
         """
         Grade the run.
 
-        Ground truth must be recomputed from raw data — never read from a
-        file the agent could have touched.
+        Ground truth must be recomputed from raw data — never read from
+        a file the agent could have touched.
         """

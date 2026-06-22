@@ -1,4 +1,4 @@
-"""Trace serialisation helpers."""
+"""Helpers for serialising and deserialising execution traces."""
 from __future__ import annotations
 
 import datetime
@@ -18,7 +18,7 @@ def _default(obj: Any) -> Any:
 
 
 def save_trace(trace: list[TraceStep], path: Path) -> None:
-    """Write *trace* to *path* as JSON."""
+    """Serialise *trace* as JSON and write to *path*."""
     payload = {
         "saved_at": datetime.datetime.utcnow().isoformat() + "Z",
         "steps": [
@@ -30,7 +30,7 @@ def save_trace(trace: list[TraceStep], path: Path) -> None:
 
 
 def load_trace(path: Path) -> list[TraceStep]:
-    """Load a trace from a JSON file written by :func:`save_trace`."""
+    """Read a trace from a JSON file written by :func:`save_trace`."""
     data = json.loads(path.read_text())
     return [
         TraceStep(step=s["step"], kind=s["kind"], content=s["content"])

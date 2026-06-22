@@ -1,4 +1,4 @@
-"""Tool implementations for the churn task environment."""
+"""Tool implementations available to agents in the churn task environment."""
 from __future__ import annotations
 
 import json
@@ -25,7 +25,7 @@ _FORBIDDEN_RE = re.compile(
 
 
 def _validate_sql(query: str) -> str | None:
-    """Return an error message if *query* is not a safe SELECT, else None."""
+    """Return an error string if *query* is not a safe SELECT statement, else None."""
     if not _SELECT_RE.match(query):
         return "Only SELECT statements are permitted."
     if _FORBIDDEN_RE.search(query):
@@ -39,7 +39,7 @@ def _validate_sql(query: str) -> str | None:
 
 
 class ListTablesTool(Tool):
-    """Return the names of all user tables in the task database."""
+    """List all user tables present in the task database."""
 
     name = "list_tables"
     schema = {
@@ -137,7 +137,7 @@ class RunSqlTool(Tool):
 
 
 class ReadFileTool(Tool):
-    """Read a text file from the agent's sandbox working directory."""
+    """Read a text file from the agent's sandboxed working directory."""
 
     name = "read_file"
     schema = {
@@ -156,7 +156,7 @@ class ReadFileTool(Tool):
         try:
             sandbox = env.working_dir.resolve()
             target = (env.working_dir / filename).resolve()
-            # Strict sandbox check — no path traversal
+            # Strict containment check — no path traversal allowed
             if not str(target).startswith(str(sandbox) + "/") and target != sandbox:
                 return {"error": "Access denied: path is outside the working directory."}
             if not target.exists():
@@ -219,7 +219,7 @@ class SubmitAnswerTool(Tool):
 
 
 def default_tools() -> list[Tool]:
-    """Return the standard tool set for the churn task."""
+    """Return the default tool set for the churn task."""
     return [
         ListTablesTool(),
         DescribeTableTool(),

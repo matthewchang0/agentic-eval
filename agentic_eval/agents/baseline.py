@@ -1,10 +1,10 @@
 """
 Baseline scripted agent.
 
-Performs a deterministic, sensible query sequence that correctly solves the
-churn task without any external API.  Used as:
+Performs a deterministic query sequence that correctly solves the churn task
+without any external API calls.  Used as:
   - the offline / no-key fallback
-  - the sanity-check that a legitimate agent run passes all verifier criteria
+  - a sanity-check that a legitimate agent run passes all verifier criteria
 """
 from __future__ import annotations
 
@@ -19,9 +19,9 @@ if TYPE_CHECKING:
 
 class BaselineAgent(Agent):
     """
-    A deterministic scripted agent that correctly solves the churn task.
+    Deterministic scripted agent that correctly solves the churn task.
 
-    It calls tools in a logical order that mirrors what a competent analyst
+    Calls tools in a logical order that mirrors what a competent analyst
     would do, ensuring the process criterion is satisfied alongside the
     outcome criteria.
     """
@@ -33,8 +33,8 @@ class BaselineAgent(Agent):
         env: Environment,
         max_steps: int = 20,
     ) -> list[TraceStep]:
-        # Obtain the reference date from the environment (baseline has access
-        # to the env object, unlike a real model that only sees the prompt).
+        # Obtain the reference date directly from the environment (the baseline
+        # has access to env, unlike a real model that only sees the prompt).
         churn_env: "ChurnEnvironment" = env  # type: ignore[assignment]
         ref = churn_env.reference_date
         prior_start = (ref - timedelta(days=60)).isoformat()
@@ -70,7 +70,7 @@ class BaselineAgent(Agent):
         for tbl in ("customers", "subscriptions", "usage_events", "payments"):
             call("describe_table", table_name=tbl)
 
-        # 2. Confirm active customers (satisfies subscriptions query criterion)
+        # 2. List active customers (satisfies subscriptions query criterion)
         call(
             "run_sql",
             query=(
@@ -147,7 +147,7 @@ LIMIT 3
 """,
         )
 
-        # 6. Build and submit the answer
+        # 6. Build and submit the final answer
         top_3 = []
         result_dict = churn_result  # type: ignore[assignment]
         if isinstance(result_dict, dict) and "rows" in result_dict:

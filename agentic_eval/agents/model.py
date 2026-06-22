@@ -2,7 +2,7 @@
 Anthropic-API-driven agent.
 
 Reads ANTHROPIC_API_KEY and ANTHROPIC_MODEL from the environment.
-If no key is present, falls back to BaselineAgent with a clear log message.
+Falls back to BaselineAgent with a warning when no API key is present.
 """
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ class ModelAgent(Agent):
     # ------------------------------------------------------------------
 
     def _build_anthropic_tools(self, tools: list[Tool]) -> list[dict[str, Any]]:
-        """Convert Tool objects to the Anthropic tool-definition schema."""
+        """Convert Tool objects into the Anthropic tool-definition schema."""
         result = []
         for t in tools:
             s = dict(t.schema)
@@ -101,7 +101,7 @@ class ModelAgent(Agent):
                 messages=messages,
             )
 
-            # Record any text/thinking in the trace
+            # Capture any text/thinking blocks in the trace
             for block in response.content:
                 if hasattr(block, "text") and block.text:
                     trace.append(
@@ -112,7 +112,7 @@ class ModelAgent(Agent):
                 break
 
             if response.stop_reason != "tool_use":
-                # Unexpected stop — exit gracefully
+                # Unexpected stop reason — exit gracefully
                 log.warning("Unexpected stop_reason=%s", response.stop_reason)
                 break
 
@@ -158,7 +158,7 @@ class ModelAgent(Agent):
                 if name == "submit_answer":
                     submitted = True
 
-            # Advance the conversation
+            # Append assistant turn and tool results before the next iteration
             messages.append({"role": "assistant", "content": response.content})
             messages.append({"role": "user", "content": tool_results})
             step += 1

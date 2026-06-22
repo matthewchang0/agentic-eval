@@ -1,4 +1,4 @@
-"""agentic_eval — mini agentic evaluation framework."""
+"""agentic_eval — lightweight agentic evaluation framework."""
 from .interfaces import (
     Agent,
     CriterionResult,

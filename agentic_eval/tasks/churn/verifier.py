@@ -2,13 +2,13 @@
 Churn-task verifier.
 
 Ground truth is always recomputed from the raw database — never read from any
-file the agent could have touched.  The verifier grades four criteria:
+file the agent could have touched.  Four criteria are graded:
 
   (a) well_formed_json   — submission is correctly structured JSON
-  (b) correct_ids        — the set of submitted customer_ids matches ground truth
-  (c) correct_order      — ranking order is correct
-  (d) queried_tables     — the trace shows the agent actually ran queries
-                           against usage_events, payments, AND subscriptions
+  (b) correct_ids        — submitted customer_ids match the ground-truth set
+  (c) correct_order      — ranking order matches ground truth
+  (d) queried_tables     — the trace shows the agent queried usage_events,
+                           payments, AND subscriptions
 """
 from __future__ import annotations
 
@@ -32,11 +32,11 @@ class ChurnVerifier(Verifier):
 
     def compute_ground_truth(self, db_path: Path) -> list[dict[str, Any]]:
         """
-        Recompute the top-3 churn-risk customers from raw DB data.
+        Recompute the top-3 churn-risk customers from raw database data.
 
-        Returns a list of at most 3 dicts, sorted by churn_score DESC then
-        customer_id ASC.  Each dict has keys:
-          customer_id, prior_events, recent_events, failed_payments, churn_score
+        Returns at most 3 dicts sorted by churn_score DESC then customer_id ASC.
+        Each dict has keys: customer_id, prior_events, recent_events,
+        failed_payments, churn_score.
         """
         ref = self.reference_date
         prior_start = (ref - timedelta(days=60)).isoformat()
@@ -106,7 +106,7 @@ class ChurnVerifier(Verifier):
 
     @staticmethod
     def _criterion_well_formed(answer_path: Path) -> tuple[CriterionResult, list[dict], bool]:
-        """Parse the submission; return criterion, parsed entries, and ok flag."""
+        """Parse the submission and return (criterion, parsed entries, ok flag)."""
         if not answer_path.exists():
             return (
                 CriterionResult("well_formed_json", False, "answer.json not found"),
@@ -153,7 +153,7 @@ class ChurnVerifier(Verifier):
 
     @staticmethod
     def _criterion_process(trace: list[TraceStep]) -> CriterionResult:
-        """Check that the agent actually queried the three relevant tables."""
+        """Verify the agent queried all three relevant tables."""
         sql_queries: list[str] = []
         for step in trace:
             if step.kind == "tool_call":
@@ -163,10 +163,10 @@ class ChurnVerifier(Verifier):
                     if q:
                         sql_queries.append(q.lower())
 
-        combined = " ".join(sql_queries)
-        hit_usage = "usage_events" in combined
-        hit_payments = "payments" in combined
-        hit_subs = "subscriptions" in combined
+        all_sql = " ".join(sql_queries)
+        hit_usage = "usage_events" in all_sql
+        hit_payments = "payments" in all_sql
+        hit_subs = "subscriptions" in all_sql
         ok = hit_usage and hit_payments and hit_subs
         return CriterionResult(
             "queried_tables",

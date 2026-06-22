@@ -9,14 +9,14 @@ usage_events   — event_id, customer_id, event_date, event_count
 payments       — payment_id, customer_id, payment_date, amount, status
 
 Churn-risk tiers (assigned by seed-shuffling customer IDs):
-  HIGH_RISK   (ids 0–3 of shuffled list): active sub, big usage decline, 2–4 failed payments
+  HIGH_RISK   (ids 0–3 of shuffled list): active sub, large usage decline, 2–4 failed payments
   MEDIUM_RISK (ids 4–7):                  active sub, moderate decline, 1 failed payment
   LOW_RISK    (ids 8–13):                 active sub, flat/growing usage, no failed payments
   INACTIVE    (ids 14–19):                cancelled/paused sub, variable usage
 
-The tiers guarantee that the top-3 by churn score are always HIGH_RISK customers,
-but WHICH three and in what ORDER depend entirely on the seed — making hardcoded answers
-wrong for all but one seed.
+Tiers guarantee the top-3 by churn score always come from HIGH_RISK customers,
+but WHICH three and in what ORDER depend entirely on the seed — hardcoded answers
+are wrong for all but a single seed.
 """
 from __future__ import annotations
 
@@ -77,10 +77,9 @@ def build_db(path: Path, seed: int = 42, reference_date: date | None = None) -> 
     Build a SQLite database at *path* deterministically from *seed*.
 
     Returns the *reference_date* used for churn calculations (the "today"
-    of the task).  All date ranges in the churn formula are relative to this
-    date:
-      - prior period:  [ref − 60, ref − 30)
-      - recent period: [ref − 30, ref)
+    of the task).  Date ranges in the churn formula are relative to this date:
+      - prior period:           [ref − 60, ref − 30)
+      - recent period:          [ref − 30, ref)
       - failed payments window: [ref − 60, ref)
     """
     if reference_date is None:
@@ -91,26 +90,26 @@ def build_db(path: Path, seed: int = 42, reference_date: date | None = None) -> 
     prior_start = reference_date - timedelta(days=60)
     recent_start = reference_date - timedelta(days=30)
 
-    # Shuffle IDs to make risk-tier assignment seed-dependent
+    # Shuffle IDs so risk-tier assignment varies with seed
     ids = list(range(1, N_CUSTOMERS + 1))
     shuffled = ids.copy()
     rng.shuffle(shuffled)
 
-    high_risk_ids = set(shuffled[:4])     # 4 high-risk → top 3 will come from here
+    high_risk_ids = set(shuffled[:4])     # 4 high-risk — top 3 will always come from here
     medium_risk_ids = set(shuffled[4:8])
     low_risk_ids = set(shuffled[8:14])
-    # shuffled[14:] → inactive (cancelled/paused)
+    # shuffled[14:] → inactive (cancelled/paused subscription)
 
     conn = sqlite3.connect(str(path))
     conn.executescript(_SCHEMA)
 
     # ---- customers ----
-    used_names: set[str] = set()
+    seen_names: set[str] = set()
     for cid in range(1, N_CUSTOMERS + 1):
         while True:
             name = f"{rng.choice(_FIRST_NAMES)} {rng.choice(_LAST_NAMES)}"
-            if name not in used_names:
-                used_names.add(name)
+            if name not in seen_names:
+                seen_names.add(name)
                 break
         email = f"user{cid}@example.com"
         signup_date = reference_date - timedelta(days=rng.randint(90, 400))
@@ -153,7 +152,7 @@ def build_db(path: Path, seed: int = 42, reference_date: date | None = None) -> 
 
         recent_count = max(0, int(prior_base * (1.0 - decline_pct)))
 
-        # Prior-period events
+        # Prior-period usage events
         for _ in range(prior_base):
             offset = rng.randint(0, 29)
             event_date = prior_start + timedelta(days=offset)
@@ -162,7 +161,7 @@ def build_db(path: Path, seed: int = 42, reference_date: date | None = None) -> 
                 (cid, event_date.isoformat()),
             )
 
-        # Recent-period events
+        # Recent-period usage events
         for _ in range(recent_count):
             offset = rng.randint(0, 29)
             event_date = recent_start + timedelta(days=offset)
@@ -171,7 +170,7 @@ def build_db(path: Path, seed: int = 42, reference_date: date | None = None) -> 
                 (cid, event_date.isoformat()),
             )
 
-        # Successful payments (2–5)
+        # Successful payments (2–5 per customer)
         for _ in range(rng.randint(2, 5)):
             offset = rng.randint(0, 59)
             pdate = prior_start + timedelta(days=offset)

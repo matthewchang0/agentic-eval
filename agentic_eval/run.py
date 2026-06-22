@@ -3,9 +3,9 @@ CLI runner: python -m agentic_eval.run
 
 Flags
 -----
---agent   {baseline,model}   which agent to use (default: baseline)
---n       INT                number of task instances / seeds (default: 5)
---out     PATH               report output path (default: report.json)
+--agent   {baseline,model}   agent implementation to use (default: baseline)
+--n       INT                number of task instances to run (default: 5)
+--out     PATH               output path for the JSON report (default: report.json)
 --seed    INT                starting seed (default: 0); instances use seeds [seed, seed+n)
 """
 from __future__ import annotations
@@ -55,7 +55,7 @@ def _defect_taxonomy(verdicts: list[VerdictReport]) -> dict[str, int]:
 
 
 def _print_table(verdicts: list[VerdictReport], criterion_rates: dict[str, float]) -> None:
-    pass_rate = sum(1 for v in verdicts if v.passed) / len(verdicts)
+    pass_rate = sum(v.passed for v in verdicts) / len(verdicts)
     print()
     print("=" * 54)
     print(f"  Instances:  {len(verdicts)}")
@@ -160,7 +160,7 @@ def main(argv: list[str] | None = None) -> int:
     }
 
     args.out.write_text(json.dumps(report, indent=2))
-    print(f"\nReport saved → {args.out}")
+    print(f"\nReport written → {args.out}")
     _print_table(verdicts, criterion_rates)
 
     return 0 if all(v.passed for v in verdicts) else 1

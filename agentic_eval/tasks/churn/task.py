@@ -1,4 +1,4 @@
-"""ChurnTask and ChurnEnvironment."""
+"""Task and environment definitions for the churn-risk evaluation."""
 from __future__ import annotations
 
 import shutil
@@ -55,20 +55,20 @@ Do NOT guess — the correct answer depends entirely on the data in the database
 
 
 class ChurnEnvironment(Environment):
-    """Isolated environment containing the task SQLite database and sandbox dir."""
+    """Isolated environment holding the task SQLite database and sandbox directory."""
 
     def __init__(self, working_dir: Path, db_path: Path, reference_date: date) -> None:
         self._working_dir = working_dir
         self.db_path = db_path
         self.reference_date = reference_date
-        self._owned_tmp: Path | None = None  # set by factory if we created the tmpdir
+        self._owned_tmp: Path | None = None  # set by factory when we own the tmpdir
 
     @property
     def working_dir(self) -> Path:
         return self._working_dir
 
     def teardown(self) -> None:
-        """Remove the temp working directory and its contents."""
+        """Delete the temporary working directory and all of its contents."""
         root = self._owned_tmp or self._working_dir
         if root.exists():
             shutil.rmtree(root, ignore_errors=True)
@@ -76,10 +76,10 @@ class ChurnEnvironment(Environment):
 
 class ChurnTask(Task):
     """
-    SQL data-analysis task: identify the top-3 churn-risk customers.
+    SQL data-analysis task: identify the top-3 customers most at risk of churning.
 
-    Each *seed* produces a deterministically different database, so running
-    multiple seeds gives independent task instances.
+    Each *seed* produces a deterministically distinct database, so running
+    multiple seeds yields independent task instances.
     """
 
     def __init__(self, seed: int = 42, reference_date: date | None = None) -> None:
@@ -108,7 +108,7 @@ class ChurnTask(Task):
         )
 
     def build_env(self) -> ChurnEnvironment:
-        """Create a temp directory, build the DB, and return the environment."""
+        """Create a temp directory, populate the database, and return the environment."""
         tmp = Path(tempfile.mkdtemp(prefix=f"agentic_eval_{self.instance_id}_"))
         db_path = tmp / "churn.db"
         ref_date = build_db(db_path, seed=self.seed, reference_date=self._reference_date)

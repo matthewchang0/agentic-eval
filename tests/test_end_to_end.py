@@ -1,10 +1,10 @@
 """
 End-to-end tests.
 
-  - baseline agent passes for multiple seeds
-  - run.py CLI produces a valid report
-  - sql guard blocks non-SELECT statements
-  - submit_answer is idempotent (second call overwrites first)
+  - baseline agent passes all criteria for multiple seeds
+  - run.py CLI produces a valid JSON report
+  - SQL guard rejects non-SELECT statements
+  - submit_answer is idempotent (a second call overwrites the first)
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ from agentic_eval.tools import RunSqlTool, SubmitAnswerTool, default_tools
 
 @pytest.mark.parametrize("seed", [0, 1, 7, 42, 99])
 def test_baseline_passes_all_seeds(seed: int):
-    """Baseline agent must pass every criterion for each tested seed."""
+    """Baseline agent must satisfy every criterion for each tested seed."""
     ref = date(2024, 3, 1)
     task = ChurnTask(seed=seed, reference_date=ref)
     env = task.build_env()
@@ -57,11 +57,11 @@ def test_baseline_passes_all_seeds(seed: int):
         "UPDATE subscriptions SET status='active' WHERE 1=1",
         "ATTACH DATABASE '/tmp/evil.db' AS evil",
         "CREATE TABLE pwn (x TEXT)",
-        "SELECT * FROM customers; DROP TABLE customers",  # semicolon injection attempt
+        "SELECT * FROM customers; DROP TABLE customers",  # semicolon-injection attempt
     ],
 )
 def test_sql_guard_blocks_mutations(query: str):
-    """run_sql must reject any non-SELECT or mutation-containing query."""
+    """run_sql must reject non-SELECT queries and any mutation-containing statement."""
     ref = date(2024, 3, 1)
     task = ChurnTask(seed=42, reference_date=ref)
     env = task.build_env()
@@ -78,7 +78,7 @@ def test_sql_guard_blocks_mutations(query: str):
 # ---------------------------------------------------------------------------
 
 def test_cli_produces_report(tmp_path: Path):
-    """Running the CLI with --n 3 should exit 0 and write a valid JSON report."""
+    """CLI with --n 3 should exit 0 and write a valid JSON report."""
     report_path = tmp_path / "report.json"
     result = subprocess.run(
         [
@@ -115,7 +115,7 @@ def test_cli_produces_report(tmp_path: Path):
 # ---------------------------------------------------------------------------
 
 def test_same_seed_same_verdict():
-    """Running with the same seed twice must produce identical verdicts."""
+    """The same seed must produce identical verdicts across two independent runs."""
     ref = date(2024, 3, 1)
 
     def run_once(seed: int) -> tuple[list[int], float]:
@@ -143,8 +143,8 @@ def test_same_seed_same_verdict():
 
 def test_different_seeds_different_answers():
     """
-    Different seeds should (with overwhelming probability) produce different
-    top-3 rankings — confirming that hardcoding answers won't generalise.
+    Different seeds should (with overwhelming probability) yield different
+    top-3 rankings — confirming that a hardcoded answer won't generalise.
     """
     ref = date(2024, 3, 1)
     seen: set[tuple[int, ...]] = set()
